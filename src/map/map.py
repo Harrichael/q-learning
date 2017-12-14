@@ -42,7 +42,7 @@ class Map(BaseConfig):
     def render_objs(self, objs):
         render_els = []
         render_els.append([Wall for _ in range(self.grid.num_cols + 2)])
-        for row_num in range(self.grid.num_rows):
+        for row_num in sorted(range(self.grid.num_rows), reverse=True):
             row_els = list(chain([Wall], [objs[(col_num, row_num)] for col_num in range(self.grid.num_cols)], [Wall]))
             render_els.append(row_els)
         render_els.append([Wall for _ in range(self.grid.num_cols + 2)])

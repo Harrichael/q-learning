@@ -1,5 +1,6 @@
 
 import argparse
+import tqdm
 
 from src.map.map import Map
 from src.sim import Simulator
@@ -13,8 +14,10 @@ def run_sim(config):
     agent = QAgent(basement.obj_grid().keys(), config.alpha, config.gamma)
     sim = Simulator(basement, agent)
 
-    for _ in range(config.sim_iterations):
-        sim.step()
+    progress_bar = lambda itr: tqdm.tqdm(itr, desc='Q Learning Sim', unit='steps')
+    with open(config.log_file, 'w+') as log_file:
+        for _ in progress_bar(range(config.sim_iterations)):
+            sim.step(log_file)
 
     print('Final reward: {}'.format(sim.reward))
     print('Final policy network:')

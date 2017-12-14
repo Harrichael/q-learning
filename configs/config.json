@@ -1,5 +1,6 @@
 {
     "map_file": "maps/basement.json",
+    "log_file": "logs/basement_log.txt",
     "sim_iterations": 100000,
     "alpha": 0.15,
     "gamma": 0.75

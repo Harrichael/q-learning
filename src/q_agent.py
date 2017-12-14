@@ -8,7 +8,7 @@ class QAgent:
     def __init__(self, state_locs, alpha, gamma):
         self.policy = {}
         for loc in state_locs:
-            self.policy[loc] = dict([(a, 0) for a in Action])
+            self.policy[loc] = dict([(a, random.randint(-5, 5)) for a in Action])
 
         self.alpha = alpha
         self.gamma = gamma
@@ -25,6 +25,7 @@ class QAgent:
         for loc, pol_acts in self.policy.items():
             if not isinstance(objs[loc], Wall):
                 best_action, action_val = max(pol_acts.items(), key=lambda kv: kv[1])
+                print(loc.x, loc.y, action_val)
                 objs[loc] = ActionComponent(best_action)
 
         return env_map.render_objs(objs)

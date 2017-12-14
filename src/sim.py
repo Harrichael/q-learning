@@ -13,7 +13,7 @@ class Simulator:
         self.donut_loc = None
         self.reward = 0
 
-    def step(self):
+    def step(self, logger):
         if self.donut_loc is None:
             if random.random() < 0.25:
                 self.donut_loc = random.choice(self.map.donut_spawns).loc
@@ -22,15 +22,15 @@ class Simulator:
 
         if random.random() > 0.82:
             new_action = random.choice([a for a in Action if a != action])
-            print('You attempted to go {}. You fail and go {}.'.format(action.name, new_action.name))
+            logger.write('You attempted to go {}. You fail and go {}.\n'.format(action.name, new_action.name))
             action = new_action
         else:
-            print('You go {}.'.format(action.name))
+            logger.write('You go {}.\n'.format(action.name))
 
         if action == Action.up:
-            new_agent_loc = Point(self.agent_loc.x, self.agent_loc.y - 1)
-        elif action == Action.down:
             new_agent_loc = Point(self.agent_loc.x, self.agent_loc.y + 1)
+        elif action == Action.down:
+            new_agent_loc = Point(self.agent_loc.x, self.agent_loc.y - 1)
         elif action == Action.left:
             new_agent_loc = Point(self.agent_loc.x - 1, self.agent_loc.y)
         elif action == Action.right:
@@ -48,18 +48,18 @@ class Simulator:
 
             if isinstance(objs[self.agent_loc], Hazard) and random.random() < 0.50:
                 reward_delta -= 10
-                print('You walked into a wall and a tile fell on you. Minus eleven. Ouch.')
+                logger.write('You walked into a wall and a tile fell on you. Minus eleven. Ouch.\n')
 
             else:
-                print('You walked into a wall. Minus one.')
+                logger.write('You walked into a wall. Minus one.\n')
 
         elif isinstance(dest_obj, Hazard):
             if random.random() < 0.50:
                 reward_delta -= 10
-                print('A tile fell on you. Minus ten.')
+                logger.write('A tile fell on you. Minus ten.\n')
             
             else:
-                print('The ceiling creaks, but nothing falls.')
+                logger.write('The ceiling creaks, but nothing falls.\n')
 
             self.agent_loc = new_agent_loc
 
@@ -68,16 +68,16 @@ class Simulator:
                 reward_delta += 10
                 self.donut_loc = None
 
-                print('Wow, a donut! Plus ten.')
+                logger.write('Wow, a donut! Plus ten.\n')
 
             else:
-                print('Aww, no donut.')
+                logger.write('Aww, no donut.\n')
 
             self.agent_loc = new_agent_loc
 
         elif isinstance(dest_obj, Empty):
             self.agent_loc = new_agent_loc
-            print('You walk on.')
+            logger.write('You walk on.\n')
 
         else:
             raise NotImplementedError('Object not implemented: {}'.format(dest_obj))
@@ -85,5 +85,6 @@ class Simulator:
         self.reward += reward_delta
         self.agent.update(start_loc, self.agent_loc, action, reward_delta)
         
-        print(self.map.render_agent(self.agent_loc))
+        logger.write(self.map.render_agent(self.agent_loc))
+        logger.write('\n')
 
