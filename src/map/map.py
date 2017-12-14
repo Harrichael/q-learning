@@ -1,10 +1,9 @@
 
-from collections import defaultdict
 from itertools import chain
 
 from src.geom import Point, Grid
 from src.config.base_config import BaseConfig
-from src.map.objects import Wall, Hazard, DonutSpawner, Empty
+from src.map.objects import Wall, Hazard, DonutSpawner, Empty, Agent
 
 class Map(BaseConfig):
     _fields_ = [
@@ -24,11 +23,23 @@ class Map(BaseConfig):
         for donut_spawn in self.donut_spawns:
             yield donut_spawn
 
-    def __repr__(self):
-        objs = defaultdict(Empty)
+    def obj_grid(self):
+        objs = {}
+        for x in range(self.grid.num_cols):
+            for y in range(self.grid.num_rows):
+                loc = Point(x, y)
+                objs[loc] = Empty(*loc)
+
         for obj in self.objects():
             objs[obj.loc] = obj
 
+        return objs
+
+    def empty_spaces(self):
+        objs = self.obj_grid()
+        return [obj for obj in objs.values() if isinstance(obj, Empty)]
+
+    def render_objs(self, objs):
         render_els = []
         render_els.append([Wall for _ in range(self.grid.num_cols + 2)])
         for row_num in range(self.grid.num_rows):
@@ -37,4 +48,13 @@ class Map(BaseConfig):
         render_els.append([Wall for _ in range(self.grid.num_cols + 2)])
 
         return '\n'.join(map(lambda r: ''.join(map(lambda el: el.render(), r)), render_els))
+
+    def render_agent(self, agent_loc):
+        objs = self.obj_grid()
+        objs[agent_loc] = Agent(*agent_loc)
+        return self.render_objs(objs)
+
+    def __repr__(self):
+        objs = self.obj_grid()
+        return self.render_objs(objs)
 
