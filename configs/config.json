@@ -1,4 +1,6 @@
 {
     "map_file": "maps/basement.json",
-    "sim_iterations": 10000
+    "sim_iterations": 100000,
+    "alpha": 0.15,
+    "gamma": 0.75
 }

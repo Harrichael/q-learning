@@ -18,7 +18,7 @@ class Simulator:
             if random.random() < 0.25:
                 self.donut_loc = random.choice(self.map.donut_spawns).loc
 
-        action = self.agent.step(self.map, self.agent_loc)
+        action = self.agent.step( self.agent_loc)
 
         if random.random() > 0.82:
             new_action = random.choice([a for a in Action if a != action])
@@ -40,12 +40,14 @@ class Simulator:
 
         objs = self.map.obj_grid()
         dest_obj = objs.get(new_agent_loc, Wall(*new_agent_loc))
+        start_loc = self.agent_loc
+        reward_delta = 0
 
         if isinstance(dest_obj, Wall):
-            self.reward -= 1
+            reward_delta -= 1
 
             if isinstance(objs[self.agent_loc], Hazard) and random.random() < 0.50:
-                self.reward -= 10
+                reward_delta -= 10
                 print('You walked into a wall and a tile fell on you. Minus eleven. Ouch.')
 
             else:
@@ -53,7 +55,7 @@ class Simulator:
 
         elif isinstance(dest_obj, Hazard):
             if random.random() < 0.50:
-                self.reward -= 10
+                reward_delta -= 10
                 print('A tile fell on you. Minus ten.')
             
             else:
@@ -63,7 +65,7 @@ class Simulator:
 
         elif isinstance(dest_obj, DonutSpawner):
             if self.donut_loc == new_agent_loc:
-                self.reward += 10
+                reward_delta += 10
                 self.donut_loc = None
 
                 print('Wow, a donut! Plus ten.')
@@ -80,6 +82,8 @@ class Simulator:
         else:
             raise NotImplementedError('Object not implemented: {}'.format(dest_obj))
         
+        self.reward += reward_delta
+        self.agent.update(start_loc, self.agent_loc, action, reward_delta)
         
         print(self.map.render_agent(self.agent_loc))
 

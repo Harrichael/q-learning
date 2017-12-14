@@ -5,5 +5,7 @@ class Config(BaseConfig):
     _fields_ = [
         ('map_file', str),
         ('sim_iterations', int),
+        ('alpha', float),
+        ('gamma', float),
     ]
 
