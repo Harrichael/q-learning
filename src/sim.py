@@ -21,12 +21,16 @@ class Simulator:
         action = self.agent.step(self.map, self.agent_loc)
 
         if random.random() > 0.82:
-            action = random.choice([a for a in Action if a != action])
+            new_action = random.choice([a for a in Action if a != action])
+            print('You attempted to go {}. You fail and go {}.'.format(action.name, new_action.name))
+            action = new_action
+        else:
+            print('You go {}.'.format(action.name))
 
         if action == Action.up:
-            new_agent_loc = Point(self.agent_loc.x, self.agent_loc.y + 1)
-        elif action == Action.down:
             new_agent_loc = Point(self.agent_loc.x, self.agent_loc.y - 1)
+        elif action == Action.down:
+            new_agent_loc = Point(self.agent_loc.x, self.agent_loc.y + 1)
         elif action == Action.left:
             new_agent_loc = Point(self.agent_loc.x - 1, self.agent_loc.y)
         elif action == Action.right:
@@ -45,7 +49,7 @@ class Simulator:
                 print('You walked into a wall and a tile fell on you. Minus eleven. Ouch.')
 
             else:
-                print('You walked into a wall. Minus one')
+                print('You walked into a wall. Minus one.')
 
         elif isinstance(dest_obj, Hazard):
             if random.random() < 0.50:
@@ -53,7 +57,7 @@ class Simulator:
                 print('A tile fell on you. Minus ten.')
             
             else:
-                print('The ceiling creaks, but nothing falls')
+                print('The ceiling creaks, but nothing falls.')
 
             self.agent_loc = new_agent_loc
 
